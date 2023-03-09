@@ -1,0 +1,42 @@
+version: '3'
+
+# docker-compose --env-file .env up
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: my-app
+    restart: always
+    environment:
+      - APP_ENV=production
+    volumes:
+      - ./.:/var/www/
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+
+  db:
+    image: mysql:8.0
+    container_name: my-db
+    restart: always
+    environment:
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD_ROOT}
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+
+volumes:
+  db-data:
+
+networks:
+  app-network:
+    driver: bridge
